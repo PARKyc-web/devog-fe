@@ -9,14 +9,17 @@ export function meta() {
 
 export default function Signup() {
   const [message, setMessage] = useState("");
+  const [signUpResult, setSignUpResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setMessage("");
+    setSignUpResult(null);
     setIsSubmitting(true);
 
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const payload = {
       loginId: formData.get("loginId"),
       password: formData.get("password"),
@@ -30,13 +33,17 @@ export default function Signup() {
         },
         body: JSON.stringify(payload),
       });
+      const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error("회원가입 요청에 실패했습니다.");
+      if (!response.ok || data.result === false) {
+        throw new Error(data.message ?? "회원가입 요청에 실패했습니다.");
       }
 
-      setMessage("회원가입 요청을 보냈습니다.");
-      event.currentTarget.reset();
+      setSignUpResult({
+        result: data.result,
+        loginId: data.data?.loginId ?? "",
+      });
+      form.reset();
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -111,6 +118,13 @@ export default function Signup() {
             {isSubmitting ? "요청 중..." : "가입하기"}
           </button>
         </form>
+
+        {signUpResult && (
+          <div className="mt-5 space-y-2 rounded-md border border-[#d9e1d5] bg-white px-4 py-3 text-sm text-[#2d332e]">
+            <p>성공여부: {signUpResult.result ? "성공" : "실패"}</p>
+            <p>회원가입한 아이디: {signUpResult.loginId}</p>
+          </div>
+        )}
 
         {message && (
           <p className="mt-5 rounded-md border border-[#d9e1d5] bg-white px-4 py-3 text-sm text-[#2d332e]">

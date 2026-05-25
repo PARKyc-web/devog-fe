@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 export function meta() {
   return [
@@ -10,21 +10,45 @@ export function meta() {
 const menuItems = [
   { label: "회원가입", to: "/signup" },
   { label: "로그인", to: "/login" },
+  { label: "서비스 연결", to: "/service-connect" },
   { label: "OAuth 로그인", to: "/oauth-login" },
   { label: "활동조회", to: "/activity" },
   { label: "notion 작성", to: "/notion" },
 ];
 
+function getCookieValue(cookieHeader, name) {
+  const cookie = cookieHeader
+    .split("; ")
+    .find((item) => item.startsWith(`${name}=`));
+
+  return cookie ? decodeURIComponent(cookie.split("=")[1]) : "";
+}
+
+export function loader({ request }) {
+  const cookieHeader = request.headers.get("Cookie") ?? "";
+  const hasRefreshToken = Boolean(getCookieValue(cookieHeader, "refresh-token"));
+  const loginId = getCookieValue(cookieHeader, "loginId");
+
+  return {
+    loginId: hasRefreshToken ? loginId : "",
+  };
+}
+
 export default function Home() {
+  const { loginId } = useLoaderData();
+
   return (
     <main className="min-h-screen bg-[#f6f8f5] text-[#151815]">
-      <header className="flex h-20 items-center px-6 sm:px-10">
+      <header className="flex h-20 items-center justify-between px-6 sm:px-10">
         <Link
           className="text-xl font-bold tracking-wide text-[#1f6b49]"
           to="/"
         >
           DEVOG
         </Link>
+        {loginId && (
+          <p className="text-sm font-semibold text-[#2d332e]">{loginId}</p>
+        )}
       </header>
 
       <section className="mx-auto flex w-full max-w-5xl flex-col px-6 pb-16 pt-12 sm:px-10 sm:pt-20">

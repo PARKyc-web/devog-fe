@@ -5,5 +5,5 @@ export function meta() {
 }
 
 export default function WebLogin() {
-  return <LoginForm platform="web" />;
+  return <LoginForm />;
 }
