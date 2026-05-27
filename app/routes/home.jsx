@@ -11,6 +11,7 @@ const menuItems = [
   { label: "회원가입", to: "/signup" },
   { label: "로그인", to: "/login" },
   { label: "서비스 연결", to: "/service-connect" },
+  { label: "요청 테스트", to: "/request-test" },
   { label: "OAuth 로그인", to: "/oauth-login" },
   { label: "활동조회", to: "/activity" },
   { label: "notion 작성", to: "/notion" },
